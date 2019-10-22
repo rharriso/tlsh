@@ -20,7 +20,7 @@ if [ $# -eq 1 -a "$1" = "debug" ]; then
 else
   mkdir -p build/release
   cd build/release
-  cmake ../.. 
+  cmake ../..
 fi
 makecversion=0
 if [ $# -eq 1 -a "$1" = "-c" ]; then
