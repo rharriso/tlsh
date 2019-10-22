@@ -55,6 +55,9 @@ if(MSVC)
     add_definitions(-DTLSH_EXPORTS -DTLSH_LIB)
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC" )
+
 set(TLSH_SRCS tlsh.cpp tlsh_impl.cpp tlsh_util.cpp input_desc.cpp shared_file_functions.cpp)
 add_library(tlsh STATIC ${TLSH_SRCS})
 set_target_properties(tlsh PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)

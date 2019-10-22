@@ -3,7 +3,7 @@
  * Users may opt to use either license depending on the license
  * restictions of the systems with which they plan to integrate
  * the TLSH code.
- */ 
+ */
 
 /* ==============
  * Apache License
@@ -172,7 +172,7 @@ void Tlsh::reset()
 
 Tlsh& Tlsh::operator=(const Tlsh& other)
 {
-    if (this == &other) 
+    if (this == &other)
         return *this;
 
     *impl = *other.impl;
@@ -189,7 +189,7 @@ bool Tlsh::operator==(const Tlsh& other) const
         return ( 0 == impl->compare(*other.impl) );
 }
 
-bool Tlsh::operator!=(const Tlsh& other) const 
+bool Tlsh::operator!=(const Tlsh& other) const
 {
     return !(*this==other);
 }
