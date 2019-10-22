@@ -56,16 +56,25 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "tlsh_t.h"
+#include "iostream"
+#include "tlsh.h"
+#include "tlsh_util.h"
 
 extern "C"
 {
-
   const char *get_hash(const unsigned char *data, unsigned int len)
   {
-    tlsh_t *t = tlsh_create();
-    const char *hash = tlsh_get_hash(t, data, len);
-    tlsh_destroy(t);
+    std::cout << data << '\n';
+    Tlsh t;
+    std::cout << "Getting Final" << '\n';
+    t.final(data, len);
+    std::cout << "Getting Hash" << '\n';
+    auto hash = t.getHash();
+    std::cout << "Returning Hash: " << hash << '\n';
     return hash;
+  }
+
+  int get_distance(const unsigned char source[], const unsigned char dest[]) {
+    return h_distance(TLSH_STRING_LEN + 1, source, dest);
   }
 }

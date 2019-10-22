@@ -3,7 +3,7 @@
  * Users may opt to use either license depending on the license
  * restictions of the systems with which they plan to integrate
  * the TLSH code.
- */ 
+ */
 
 /* ==============
  * Apache License
@@ -93,10 +93,10 @@ void TlshImpl::reset()
 {
     delete [] this->a_bucket; this->a_bucket = NULL;
     memset(this->slide_window, 0, sizeof this->slide_window);
-    delete [] this->lsh_code; this->lsh_code = NULL; 
+    delete [] this->lsh_code; this->lsh_code = NULL;
     memset(&this->lsh_bin, 0, sizeof this->lsh_bin);
     this->data_len = 0;
-    this->lsh_code_valid = false;   
+    this->lsh_code_valid = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ static unsigned char v_table[256] = {
 // Pearson's algorithm
 unsigned char b_mapping(unsigned char salt, unsigned char i, unsigned char j, unsigned char k) {
     unsigned char h = 0;
-    
+
     h = v_table[h ^ salt];
     h = v_table[h ^ i];
     h = v_table[h ^ j];
@@ -136,7 +136,7 @@ unsigned char b_mapping(unsigned char salt, unsigned char i, unsigned char j, un
 NEVER USED - showing a step in the optimization sequence
 unsigned char faster_b_mapping(unsigned char mod_salt, unsigned char i, unsigned char j, unsigned char k) {
     unsigned char h;
-    
+
     h = v_table[mod_salt ^ i];
     h = v_table[h ^ j];
     h = v_table[h ^ k];
@@ -160,16 +160,16 @@ unsigned char faster_b_mapping(unsigned char mod_salt, unsigned char i, unsigned
 	#define SLIDING_WND_SIZE_M1	7
 #endif
 
-void TlshImpl::update(const unsigned char* data, unsigned int len) 
+void TlshImpl::update(const unsigned char* data, unsigned int len)
 {
     if (this->lsh_code_valid) {
       fprintf(stderr, "call to update() on a tlsh that is already valid\n");
       return;
-    }   
+    }
 
     #define RNG_SIZE    	SLIDING_WND_SIZE
     #define RNG_IDX(i)	((i+RNG_SIZE)%RNG_SIZE)
-	
+
     unsigned int fed_len = this->data_len;
 
     if (this->a_bucket == NULL) {
@@ -187,7 +187,7 @@ void TlshImpl::update(const unsigned char* data, unsigned int len)
 
     for( unsigned int i=0; i<len; i++, fed_len++, j=RNG_IDX(j+1) ) {
         this->slide_window[j] = data[i];
-        
+
         if ( fed_len >= SLIDING_WND_SIZE_M1 ) {
             //only calculate when input >= 5 bytes
             int j_1 = RNG_IDX(j-1);
@@ -205,7 +205,7 @@ void TlshImpl::update(const unsigned char* data, unsigned int len)
 #if SLIDING_WND_SIZE>=8
             int j_7 = RNG_IDX(j-7);
 #endif
-           
+
 #ifndef CHECKSUM_0B
             for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {
 		if (k == 0) {
@@ -299,7 +299,7 @@ void TlshImpl::update(const unsigned char* data, unsigned int len)
 // update for the case when SLIDING_WND_SIZE==5 && (TLSH_CHECKSUM_LEN == 1)
 /////////////////////////////////////////////////////////////////////////////
 
-void TlshImpl::fast_update(const unsigned char* data, unsigned int len) 
+void TlshImpl::fast_update(const unsigned char* data, unsigned int len)
 {
 	unsigned int fed_len = this->data_len;
 	int j = (int)(this->data_len % RNG_SIZE);
@@ -394,12 +394,12 @@ void TlshImpl::fast_update(const unsigned char* data, unsigned int len)
 /////////////////////////////////////////////////////////////////////////////
 
 /* to signal the class there is no more data to be added */
-void TlshImpl::final(int fc_cons_option) 
+void TlshImpl::final(int fc_cons_option)
 {
     if (this->lsh_code_valid) {
       fprintf(stderr, "call to final() on a tlsh that is already valid\n");
       return;
-    }   
+    }
     // incoming data must more than or equal to MIN_DATA_LENGTH bytes
     if ((fc_cons_option <= 1) && (this->data_len < MIN_DATA_LENGTH)) {
       // this->lsh_code be empty
@@ -436,7 +436,7 @@ void TlshImpl::final(int fc_cons_option)
       return;
     }
 #endif
-    
+
     for(unsigned int i=0; i<CODE_SIZE; i++) {
         unsigned char h=0;
         for(unsigned int j=0; j<4; j++) {
@@ -454,19 +454,19 @@ void TlshImpl::final(int fc_cons_option)
 
     //Done with a_bucket so deallocate
     delete [] this->a_bucket; this->a_bucket = NULL;
-    
+
     this->lsh_bin.Lvalue = l_capturing(this->data_len);
     this->lsh_bin.Q.QR.Q1ratio = (unsigned int) ((float)(q1*100)/(float) q3) % 16;
     this->lsh_bin.Q.QR.Q2ratio = (unsigned int) ((float)(q2*100)/(float) q3) % 16;
-    this->lsh_code_valid = true;   
+    this->lsh_code_valid = true;
 }
 
 int TlshImpl::fromTlshStr(const char* str)
 {
     // Validate input string
     for( int i=0; i < TLSH_STRING_LEN; i++ )
-        if (!( 
-            (str[i] >= '0' && str[i] <= '9') || 
+        if (!(
+            (str[i] >= '0' && str[i] <= '9') ||
             (str[i] >= 'A' && str[i] <= 'F') ||
             (str[i] >= 'a' && str[i] <= 'f') ))
         {
@@ -474,12 +474,12 @@ int TlshImpl::fromTlshStr(const char* str)
         }
 
     this->reset();
-    
+
     lsh_bin_struct tmp;
     from_hex( str, TLSH_STRING_LEN, (unsigned char*)&tmp );
-    
+
     // Reconstruct checksum, Qrations & lvalue
-    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {    
+    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {
         this->lsh_bin.checksum[k] = swap_byte(tmp.checksum[k]);
     }
     this->lsh_bin.Lvalue = swap_byte( tmp.Lvalue );
@@ -487,7 +487,7 @@ int TlshImpl::fromTlshStr(const char* str)
     for( int i=0; i < CODE_SIZE; i++ ){
         this->lsh_bin.tmp_code[i] = (tmp.tmp_code[CODE_SIZE-1-i]);
     }
-    this->lsh_code_valid = true;   
+    this->lsh_code_valid = true;
 
     return 0;
 }
@@ -504,7 +504,7 @@ const char* TlshImpl::hash(char *buffer, unsigned int bufSize) const
     }
 
     lsh_bin_struct tmp;
-    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {    
+    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {
       tmp.checksum[k] = swap_byte( this->lsh_bin.checksum[k] );
     }
     tmp.Lvalue = swap_byte( this->lsh_bin.Lvalue );
@@ -527,7 +527,7 @@ const char* TlshImpl::hash() const
 
     this->lsh_code = new char [TLSH_STRING_LEN+1];
     memset(this->lsh_code, 0, TLSH_STRING_LEN+1);
-	
+
     return hash(this->lsh_code, TLSH_STRING_LEN+1);
 }
 
@@ -627,7 +627,7 @@ unsigned char bv;
 int TlshImpl::totalDiff(const TlshImpl& other, bool len_diff) const
 {
     int diff = 0;
-    
+
     if (len_diff) {
         int ldiff = mod_diff( this->lsh_bin.Lvalue, other.lsh_bin.Lvalue, RANGE_LVALUE);
         if ( ldiff == 0 )
@@ -637,26 +637,26 @@ int TlshImpl::totalDiff(const TlshImpl& other, bool len_diff) const
         else
            diff += ldiff*length_mult;
     }
-    
+
     int q1diff = mod_diff( this->lsh_bin.Q.QR.Q1ratio, other.lsh_bin.Q.QR.Q1ratio, RANGE_QRATIO);
     if ( q1diff <= 1 )
         diff += q1diff;
-    else           
+    else
         diff += (q1diff-1)*qratio_mult;
-    
+
     int q2diff = mod_diff( this->lsh_bin.Q.QR.Q2ratio, other.lsh_bin.Q.QR.Q2ratio, RANGE_QRATIO);
     if ( q2diff <= 1)
         diff += q2diff;
     else
         diff += (q2diff-1)*qratio_mult;
-    
-    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {    
+
+    for (int k = 0; k < TLSH_CHECKSUM_LEN; k++) {
       if (this->lsh_bin.checksum[k] != other.lsh_bin.checksum[k] ) {
         diff ++;
         break;
       }
     }
-    
+
     diff += h_distance( CODE_SIZE, this->lsh_bin.tmp_code, other.lsh_bin.tmp_code );
 
     return (diff);
@@ -669,7 +669,7 @@ int TlshImpl::totalDiff(const TlshImpl& other, bool len_diff) const
     (x) = (y); \
     (y) = int_tmp; } while(0)
 
-void find_quartile(unsigned int *q1, unsigned int *q2, unsigned int *q3, const unsigned int * a_bucket) 
+void find_quartile(unsigned int *q1, unsigned int *q2, unsigned int *q3, const unsigned int * a_bucket)
 {
     unsigned int bucket_copy[EFF_BUCKETS], short_cut_left[EFF_BUCKETS], short_cut_right[EFF_BUCKETS], spl=0, spr=0;
     unsigned int p1 = EFF_BUCKETS/4-1;
@@ -696,7 +696,7 @@ void find_quartile(unsigned int *q1, unsigned int *q2, unsigned int *q3, const u
             break;
         }
     }
-    
+
     short_cut_left[spl] = p2-1;
     short_cut_right[spr] = p2+1;
 
@@ -748,7 +748,7 @@ void find_quartile(unsigned int *q1, unsigned int *q2, unsigned int *q3, const u
 
 }
 
-unsigned int partition(unsigned int * buf, unsigned int left, unsigned int right) 
+unsigned int partition(unsigned int * buf, unsigned int left, unsigned int right)
 {
     if( left == right ) {
         return left;
@@ -759,14 +759,14 @@ unsigned int partition(unsigned int * buf, unsigned int left, unsigned int right
         }
         return left;
     }
-        
+
     unsigned int ret = left, pivot = (left + right)>>1;
-    
+
     unsigned int val = buf[pivot];
-    
+
     buf[pivot] = buf[right];
     buf[right] = val;
-    
+
     for( unsigned int i = left; i < right; i++ ) {
         if( buf[i] < val ) {
             SWAP_UINT( buf[ret], buf[i] );
@@ -775,7 +775,7 @@ unsigned int partition(unsigned int * buf, unsigned int left, unsigned int right
     }
     buf[right] = buf[ret];
     buf[ret] = val;
-    
+
     return ret;
 }
 
