@@ -62,7 +62,7 @@
 
 extern "C"
 {
-  const char *get_hash(const unsigned char *data, unsigned int len)
+  const char* get_hash(const unsigned char* data, unsigned int len)
   {
     std::cout << data << '\n';
     Tlsh t;
