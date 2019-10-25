@@ -59,6 +59,7 @@
 #include "iostream"
 #include "tlsh.h"
 #include "tlsh_util.h"
+#include "string.h"
 
 extern "C"
 {
@@ -69,7 +70,10 @@ extern "C"
     std::cout << "Getting Final" << '\n';
     t.final(data, len);
     std::cout << "Getting Hash" << '\n';
-    auto hash = t.getHash();
+
+    static char hash[TLSH_STRING_LEN];
+    strcpy(hash, t.getHash());
+
     std::cout << "Returning Hash: " << hash <<  " " << &hash <<'\n';
     return hash;
   }
