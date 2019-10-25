@@ -70,7 +70,7 @@ extern "C"
     t.final(data, len);
     std::cout << "Getting Hash" << '\n';
     auto hash = t.getHash();
-    std::cout << "Returning Hash: " << hash << '\n';
+    std::cout << "Returning Hash: " << hash <<  " " << &hash <<'\n';
     return hash;
   }
 

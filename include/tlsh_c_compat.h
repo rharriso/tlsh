@@ -57,6 +57,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-char* get_hash(const unsigned char* data, unsigned int len);
+const char* get_hash(const unsigned char* data, unsigned int len);
 int get_distance(const unsigned char source[], const unsigned char dest[]);
 // unsigned int tsls_string_len ();
